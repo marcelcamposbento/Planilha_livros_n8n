@@ -1,0 +1,296 @@
+{
+  "name": "Planilha Livros",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -816,
+        0
+      ],
+      "id": "bcd4643e-d9c7-4b73-8a5c-5b66a6088ea1",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e603b82f-b918-494a-9a98-d654d09cb844",
+              "name": "TITULO DO LIVRO",
+              "value": "={{ $json['TITULO DO LIVRO'] }}",
+              "type": "string"
+            },
+            {
+              "id": "439ac955-5233-401d-be8b-893c30b0f00f",
+              "name": "PREÇO(R$)",
+              "value": "={{ $json['PREÇO(R$)'] }}",
+              "type": "number"
+            },
+            {
+              "id": "b5652275-1783-4aee-be98-aae6f488e0be",
+              "name": "Autor_Genero",
+              "value": "={{ $json.AUTOR }} - {{ $json['GÊNERO'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -432,
+        -112
+      ],
+      "id": "0006298f-b8c5-4137-999a-8e063b7e16f1",
+      "name": "Padronizando Dados"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1H4CncuMDfSGdHufz6QrtVdvA3Q3bOA19JidoT5YH5gA",
+          "mode": "list",
+          "cachedResultName": "Planilha_livros",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1H4CncuMDfSGdHufz6QrtVdvA3Q3bOA19JidoT5YH5gA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1H4CncuMDfSGdHufz6QrtVdvA3Q3bOA19JidoT5YH5gA/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -608,
+        0
+      ],
+      "id": "827f6047-7e13-4cf0-8f4c-1eed37ada917",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "8iJs0ZaB09GeAI70",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e0e0d4eb-e1fc-44c7-814a-c881b6e38dce",
+              "leftValue": "={{ $json.AUTOR }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        -448,
+        80
+      ],
+      "id": "16fb6b22-f4e1-4946-9024-b13da31da65c",
+      "name": "Filtrando se tem Autor"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "179bb774-ad93-4601-a638-6dbf8a911450",
+              "leftValue": "={{ $json.EMAIL }}",
+              "rightValue": "@livraria",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -240,
+        80
+      ],
+      "id": "6356fa70-adfe-4fef-92f8-c6f4c5472de0",
+      "name": "Verificando e-mails Corporativos"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        176
+      ],
+      "id": "a29a4f63-6fa5-4744-af1e-722b10aaf30c",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "AUTOR"
+            },
+            {
+              "fieldToAggregate": "EMAIL"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        -16
+      ],
+      "id": "4eec90dc-458c-4c57-8502-0e26d764f165",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0AQ286TPC6",
+          "mode": "list",
+          "cachedResultName": "social"
+        },
+        "text": "=Novos autores adicionados {{ $json.AUTOR }} com os respectivos e-mails {{ $json.EMAIL }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.4,
+      "position": [
+        176,
+        -16
+      ],
+      "id": "c1bbec96-66b4-457e-9f49-e0d416ec38c6",
+      "name": "Send a message",
+      "webhookId": "e4823979-7bcc-418e-9c87-2cc8e307dd7c",
+      "credentials": {
+        "slackApi": {
+          "id": "xcTngibLhSATi2HX",
+          "name": "Slack account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Padronizando Dados",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Filtrando se tem Autor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrando se tem Autor": {
+      "main": [
+        [
+          {
+            "node": "Verificando e-mails Corporativos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificando e-mails Corporativos": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "26309b0a-ff69-4e2e-b4a0-daf1eaa4363f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1b109bb57244e4956a8ca5fadb6f79a63eb16f7d472680d3ac7d626a61a75009"
+  },
+  "id": "nJ9DQcf28tQ8HYMX",
+  "tags": []
+}
